@@ -1,0 +1,253 @@
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dimmed {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.navGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.navItem {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.navItem:hover:not(:disabled) {
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+}
+
+.navItem.active {
+    background: var(--claw-red-soft);
+    color: var(--claw-red);
+}
+
+.activeBar {
+    position: absolute;
+    left: -10px;
+    width: 3px;
+    height: 20px;
+    background: var(--claw-red);
+    border-radius: 0 3px 3px 0;
+}
+
+.tooltip {
+    position: absolute;
+    left: 56px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-4px);
+    z-index: 100;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+}
+
+.navItem:hover .tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.spacer {
+    flex: 1;
+}
+
+.statusWrapper {
+    position: relative;
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: 0.15s;
+    border-radius: var(--radius-md);
+}
+
+.status:hover {
+    background: var(--bg-glass);
+}
+
+.statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.running {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.stopped {
+    background: var(--text-tertiary);
+}
+
+.starting {
+    background: var(--warning);
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.error {
+    background: var(--error);
+    box-shadow: 0 0 8px var(--error);
+}
+
+.statusLabel {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 8px currentColor;
+    }
+
+    50% {
+        box-shadow: 0 0 16px currentColor;
+    }
+}
+
+/* Gateway popup */
+.gwPopup {
+    position: absolute;
+    left: 56px;
+    bottom: 0;
+    width: 180px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    box-shadow: var(--shadow-card);
+    z-index: 200;
+    animation: popIn 0.15s ease both;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: translateX(-6px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.gwPopupHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.gwPopupDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.gwPopupActive {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.gwPopupTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.gwPopupMeta {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+
+.gwPopupActions {
+    display: flex;
+    gap: 6px;
+}
+
+.gwBtn {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.gwBtn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.gwBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.gwBtnStart {
+    background: var(--claw-red);
+    border-color: var(--claw-red);
+    color: #fff;
+}
+
+.gwBtnStart:hover {
+    background: var(--claw-red-dim);
+    box-shadow: var(--shadow-glow);
+}

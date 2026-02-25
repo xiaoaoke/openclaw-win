@@ -1,0 +1,45 @@
+.app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    overflow: hidden;
+}
+
+.body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-tertiary);
+}
+
+.placeholderIcon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.placeholder h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.placeholder p {
+    font-size: 13px;
+}

@@ -1,0 +1,64 @@
+.titlebar {
+    height: var(--titlebar-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.logoIcon {
+    font-size: 16px;
+}
+
+.logoText {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+}
+
+.dragRegion {
+    flex: 1;
+    height: 100%;
+    -webkit-app-region: drag;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.controlBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.controlBtn:hover {
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+}
+
+.close:hover {
+    background: var(--error);
+    color: #fff;
+}

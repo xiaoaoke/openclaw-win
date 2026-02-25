@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Desktop — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   OpenClaw Desktop GUI — Design System & Dashboard
+   ============================================================ */
+
+:root {
+  /* Core Palette */
+  --bg-primary: #060D1A;
+  --bg-secondary: #0B1526;
+  --bg-tertiary: #101D32;
+  --bg-card: rgba(16, 29, 50, 0.65);
+  --bg-card-hover: rgba(22, 38, 65, 0.75);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-glass-border: rgba(255, 255, 255, 0.06);
+
+  /* Brand */
+  --claw-red: #FF4500;
+  --claw-red-glow: rgba(255, 69, 0, 0.25);
+  --claw-red-soft: rgba(255, 69, 0, 0.12);
+  --claw-red-dim: #CC3700;
+
+  /* Semantic */
+  --success: #00E676;
+  --success-soft: rgba(0, 230, 118, 0.12);
+  --warning: #FFB300;
+  --warning-soft: rgba(255, 179, 0, 0.12);
+  --error: #FF5252;
+  --error-soft: rgba(255, 82, 82, 0.12);
+  --info: #448AFF;
+  --info-soft: rgba(68, 138, 255, 0.12);
+
+  /* Text */
+  --text-primary: #E8ECF4;
+  --text-secondary: #8A95A8;
+  --text-tertiary: #5A6478;
+  --text-accent: #FF6B35;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 69, 0, 0.35);
+
+  /* Shadows */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px var(--claw-red-glow);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Fonts */
+  --font-ui: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ---- Titlebar ---- */
+.titlebar {
+  height: 38px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+.titlebar-logo {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.titlebar-logo span { color: var(--claw-red); font-size: 16px; }
+.titlebar-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.titlebar-btn {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: none; cursor: pointer;
+}
+.btn-close { background: #FF5F57; }
+.btn-min { background: #FEBC2E; }
+.btn-max { background: #28C840; }
+
+/* ---- Layout ---- */
+.app-layout {
+  display: flex;
+  height: calc(100vh - 38px - 32px);
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  width: 64px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 4px;
+}
+.nav-item {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  font-size: 20px;
+}
+.nav-item:hover {
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+}
+.nav-item.active {
+  background: var(--claw-red-soft);
+  color: var(--claw-red);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  width: 3px;
+  height: 20px;
+  background: var(--claw-red);
+  border-radius: 0 3px 3px 0;
+}
+.nav-item .tooltip {
+  position: absolute;
+  left: 58px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 100;
+  border: 1px solid var(--border-light);
+}
+.nav-item:hover .tooltip { opacity: 1; }
+.sidebar-spacer { flex: 1; }
+.sidebar-status {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--text-tertiary);
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--success); }
+  50% { box-shadow: 0 0 16px var(--success); }
+}
+
+/* ---- Main Content ---- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.page-header {
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.breadcrumb {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+.breadcrumb .current { color: var(--text-primary); font-weight: 500; }
+.header-actions { display: flex; gap: 10px; }
+
+.btn {
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--border-active); }
+.btn-primary {
+  background: var(--claw-red);
+  border-color: var(--claw-red);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--claw-red-dim);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ---- Dashboard Grid ---- */
+.dashboard-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+.dashboard-scroll::-webkit-scrollbar { width: 6px; }
+.dashboard-scroll::-webkit-scrollbar-track { background: transparent; }
+.dashboard-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+/* Stat Cards */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  backdrop-filter: blur(20px);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--claw-red), transparent); }
+.stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--info), transparent); }
+.stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--warning), transparent); }
+.stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--success), transparent); }
+.stat-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.stat-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.stat-card:nth-child(1) .stat-icon { background: var(--claw-red-soft); color: var(--claw-red); }
+.stat-card:nth-child(2) .stat-icon { background: var(--info-soft); color: var(--info); }
+.stat-card:nth-child(3) .stat-icon { background: var(--warning-soft); color: var(--warning); }
+.stat-card:nth-child(4) .stat-icon { background: var(--success-soft); color: var(--success); }
+.stat-label { font-size: 12px; color: var(--text-tertiary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.stat-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.stat-sub .up { color: var(--success); }
+.stat-sub .down { color: var(--error); }
+
+/* Two Column Layout */
+.dashboard-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.panel-title .icon { font-size: 16px; }
+.panel-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--claw-red-soft);
+  color: var(--claw-red);
+  font-weight: 600;
+}
+.panel-body { padding: 8px 12px; }
+
+/* Sessions List */
+.session-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.session-item:hover { background: var(--bg-glass); }
+.session-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.session-icon.whatsapp { background: rgba(37, 211, 102, 0.12); color: #25D366; }
+.session-icon.telegram { background: rgba(38, 165, 227, 0.12); color: #26A5E4; }
+.session-icon.discord { background: rgba(88, 101, 242, 0.12); color: #5865F2; }
+.session-icon.slack { background: rgba(224, 30, 90, 0.12); color: #E01E5A; }
+.session-icon.webchat { background: var(--claw-red-soft); color: var(--claw-red); }
+.session-info { flex: 1; }
+.session-name { font-size: 13px; font-weight: 500; }
+.session-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.session-status {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.session-status.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.session-status.idle { background: var(--warning); }
+.session-time { font-size: 11px; color: var(--text-tertiary); margin-right: 10px; }
+
+/* Chart Area */
+.chart-area {
+  padding: 20px;
+  height: 260px;
+  display: flex; flex-direction: column;
+}
+.chart-header-row {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.chart-value-big { font-size: 24px; font-weight: 700; }
+.chart-value-unit { font-size: 13px; color: var(--text-tertiary); font-weight: 400; }
+.chart-tabs { display: flex; gap: 4px; }
+.chart-tab {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.chart-tab:hover { color: var(--text-secondary); }
+.chart-tab.active { background: var(--claw-red-soft); color: var(--claw-red); }
+
+.chart-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.chart-svg { width: 100%; height: 100%; }
+
+/* Logs Panel */
+.logs-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+.log-line {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.1s;
+}
+.log-line:hover { background: var(--bg-glass); }
+.log-line:last-child { border-bottom: none; }
+.log-time { color: var(--text-tertiary); font-size: 11px; white-space: nowrap; }
+.log-level {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.log-level.info { background: var(--info-soft); color: var(--info); }
+.log-level.warn { background: var(--warning-soft); color: var(--warning); }
+.log-level.error { background: var(--error-soft); color: var(--error); }
+.log-level.debug { background: var(--bg-glass); color: var(--text-tertiary); }
+.log-msg { color: var(--text-secondary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log-source { color: var(--text-tertiary); font-size: 11px; white-space: nowrap; }
+
+/* ---- Status Bar ---- */
+.statusbar {
+  height: 32px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.statusbar-item {
+  display: flex; align-items: center; gap: 6px;
+}
+.statusbar-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.statusbar-dot.green { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.statusbar-right { margin-left: auto; display: flex; gap: 16px; }
+
+/* ---- Animations ---- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stat-card:nth-child(1) { animation: fadeInUp 0.4s ease 0.05s both; }
+.stat-card:nth-child(2) { animation: fadeInUp 0.4s ease 0.1s both; }
+.stat-card:nth-child(3) { animation: fadeInUp 0.4s ease 0.15s both; }
+.stat-card:nth-child(4) { animation: fadeInUp 0.4s ease 0.2s both; }
+.dashboard-columns { animation: fadeInUp 0.4s ease 0.25s both; }
+.logs-panel { animation: fadeInUp 0.4s ease 0.35s both; }
+
+/* Sparkline for stat cards */
+.sparkline-container {
+  margin-top: 10px;
+  height: 32px;
+  position: relative;
+}
+</style>
+</head>
+<body>
+
+<!-- Titlebar -->
+<div class="titlebar">
+  <div class="titlebar-logo">
+    <span>🦞</span> OpenClaw Desktop
+  </div>
+  <div class="titlebar-controls">
+    <button class="titlebar-btn btn-close"></button>
+    <button class="titlebar-btn btn-min"></button>
+    <button class="titlebar-btn btn-max"></button>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="nav-item active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="tooltip">仪表盘</span>
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="tooltip">渠道管理</span>
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M16 16H8a4 4 0 0 0-4 4v1h16v-1a4 4 0 0 0-4-4z"/><circle cx="18" cy="8" r="3"/></svg>
+      <span class="tooltip">模型管理</span>
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span class="tooltip">技能市场</span>
+    </div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span class="tooltip">对话</span>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <div class="nav-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="tooltip">设置</span>
+    </div>
+    <div class="sidebar-status">
+      <div class="status-dot"></div>
+      <span>在线</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <div class="breadcrumb">
+        仪表盘 / <span class="current">概览</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          刷新
+        </button>
+        <button class="btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          诊断
+        </button>
+        <button class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          重启 Gateway
+        </button>
+      </div>
+    </div>
+
+    <div class="dashboard-scroll">
+      <!-- Stat Cards -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">📲</div>
+            <div class="stat-label">渠道</div>
+          </div>
+          <div class="stat-value">5<span style="font-size: 16px; color: var(--text-tertiary); font-weight: 400;">/8</span></div>
+          <div class="stat-sub">已连接 · <span class="up">↑ 2 本周新增</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">💬</div>
+            <div class="stat-label">活跃会话</div>
+          </div>
+          <div class="stat-value">12</div>
+          <div class="stat-sub">进行中 · 3 个群组</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-label">Token 消耗</div>
+          </div>
+          <div class="stat-value">45.2K</div>
+          <div class="stat-sub">今日 · <span class="up">↓ 12% 较昨日</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">🖥</div>
+            <div class="stat-label">设备节点</div>
+          </div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">在线 · macOS + iOS + Android</div>
+        </div>
+      </div>
+
+      <!-- Two Column: Sessions + Chart -->
+      <div class="dashboard-columns">
+        <!-- Active Sessions -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="icon">⚡</span> 活跃会话
+            </div>
+            <span class="panel-badge">12</span>
+          </div>
+          <div class="panel-body">
+            <div class="session-item">
+              <div class="session-icon whatsapp">💬</div>
+              <div class="session-info">
+                <div class="session-name">WhatsApp · 主会话</div>
+                <div class="session-meta">dm:+86 138****7890 · Claude Opus 4.6</div>
+              </div>
+              <div class="session-time">2分钟前</div>
+              <div class="session-status active"></div>
+            </div>
+            <div class="session-item">
+              <div class="session-icon telegram">✈️</div>
+              <div class="session-info">
+                <div class="session-name">Telegram · 工作群组</div>
+                <div class="session-meta">group:开发讨论 · GPT-5.2</div>
+              </div>
+              <div class="session-time">15分钟前</div>
+              <div class="session-status active"></div>
+            </div>
+            <div class="session-item">
+              <div class="session-icon discord">🎮</div>
+              <div class="session-info">
+                <div class="session-name">Discord · 技术频道</div>
+                <div class="session-meta">guild:OpenClaw社区 · Claude Sonnet</div>
+              </div>
+              <div class="session-time">32分钟前</div>
+              <div class="session-status active"></div>
+            </div>
+            <div class="session-item">
+              <div class="session-icon slack">📋</div>
+              <div class="session-info">
+                <div class="session-name">Slack · #general</div>
+                <div class="session-meta">channel:general · Claude Opus 4.6</div>
+              </div>
+              <div class="session-time">1小时前</div>
+              <div class="session-status idle"></div>
+            </div>
+            <div class="session-item">
+              <div class="session-icon webchat">🦞</div>
+              <div class="session-info">
+                <div class="session-name">WebChat · 本地调试</div>
+                <div class="session-meta">webchat:local · Claude Opus 4.6</div>
+              </div>
+              <div class="session-time">3小时前</div>
+              <div class="session-status idle"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usage Chart -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="icon">📊</span> Token 使用趋势
+            </div>
+            <div class="chart-tabs">
+              <div class="chart-tab">24h</div>
+              <div class="chart-tab active">7天</div>
+              <div class="chart-tab">30天</div>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-header-row">
+              <div>
+                <div class="chart-value-big">312.8K <span class="chart-value-unit">tokens</span></div>
+                <div style="font-size: 12px; color: var(--success); margin-top: 2px;">↓ 8.3% 较上周</div>
+              </div>
+            </div>
+            <div class="chart-canvas">
+              <svg class="chart-svg" viewBox="0 0 500 120" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,69,0,0.35)"/>
+                    <stop offset="100%" stop-color="rgba(255,69,0,0)"/>
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="0" y1="30" x2="500" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                <line x1="0" y1="60" x2="500" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                <line x1="0" y1="90" x2="500" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                <!-- Area fill -->
+                <path d="M0,90 C30,85 60,70 100,55 C140,40 170,30 210,45 C250,60 280,35 320,25 C360,15 390,40 430,50 C460,58 490,42 500,38 L500,120 L0,120 Z" fill="url(#chartGrad)"/>
+                <!-- Line -->
+                <path d="M0,90 C30,85 60,70 100,55 C140,40 170,30 210,45 C250,60 280,35 320,25 C360,15 390,40 430,50 C460,58 490,42 500,38" fill="none" stroke="var(--claw-red)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Dots -->
+                <circle cx="100" cy="55" r="3" fill="var(--claw-red)"/>
+                <circle cx="210" cy="45" r="3" fill="var(--claw-red)"/>
+                <circle cx="320" cy="25" r="4" fill="var(--claw-red)" stroke="#0B1526" stroke-width="2"/>
+                <circle cx="430" cy="50" r="3" fill="var(--claw-red)"/>
+                <!-- Labels -->
+                <text x="50" y="115" fill="var(--text-tertiary)" font-size="10" font-family="var(--font-ui)" text-anchor="middle">周一</text>
+                <text x="150" y="115" fill="var(--text-tertiary)" font-size="10" font-family="var(--font-ui)" text-anchor="middle">周二</text>
+                <text x="250" y="115" fill="var(--text-tertiary)" font-size="10" font-family="var(--font-ui)" text-anchor="middle">周三</text>
+                <text x="350" y="115" fill="var(--text-tertiary)" font-size="10" font-family="var(--font-ui)" text-anchor="middle">周四</text>
+                <text x="450" y="115" fill="var(--text-tertiary)" font-size="10" font-family="var(--font-ui)" text-anchor="middle">周五</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs -->
+      <div class="logs-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">📋</span> 实时日志
+          </div>
+          <div class="header-actions">
+            <button class="btn" style="padding: 4px 10px; font-size: 11px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              过滤
+            </button>
+            <button class="btn" style="padding: 4px 10px; font-size: 11px;">清空</button>
+          </div>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:25:43</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">Gateway started on ws://127.0.0.1:18789</span>
+          <span class="log-source">gateway</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:25:44</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">WhatsApp channel connected · device linked · session restored</span>
+          <span class="log-source">whatsapp</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:25:45</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">Telegram bot @openclaw_bot online · polling mode</span>
+          <span class="log-source">telegram</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:26:12</span>
+          <span class="log-level warn">WARN</span>
+          <span class="log-msg">Discord rate limit approaching · 48/50 requests in window</span>
+          <span class="log-source">discord</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:27:03</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">Agent response completed · 2,340 tokens · model: claude-opus-4-6 · 3.2s</span>
+          <span class="log-source">agent</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:28:15</span>
+          <span class="log-level debug">DEBUG</span>
+          <span class="log-msg">Session pruning: removed 3 stale sessions older than 24h</span>
+          <span class="log-source">session</span>
+        </div>
+        <div class="log-line">
+          <span class="log-time">10:29:01</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">Pairing request from +86 139****5678 · code: CLAW-8X3P · awaiting approval</span>
+          <span class="log-source">pairing</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Status Bar -->
+<div class="statusbar">
+  <div class="statusbar-item">
+    <div class="statusbar-dot green"></div>
+    Gateway: Running
+  </div>
+  <div class="statusbar-item">Port: 18789</div>
+  <div class="statusbar-item">Model: Claude Opus 4.6</div>
+  <div class="statusbar-right">
+    <div class="statusbar-item">CPU: 2.3%</div>
+    <div class="statusbar-item">RAM: 128MB</div>
+    <div class="statusbar-item">v2026.2.24</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Desktop — Onboarding Wizard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #060D1A;
+            --bg-secondary: #0B1526;
+            --bg-tertiary: #101D32;
+            --bg-card: rgba(16, 29, 50, 0.65);
+            --bg-card-hover: rgba(22, 38, 65, 0.85);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --bg-glass-border: rgba(255, 255, 255, 0.06);
+            --claw-red: #FF4500;
+            --claw-red-glow: rgba(255, 69, 0, 0.25);
+            --claw-red-soft: rgba(255, 69, 0, 0.12);
+            --claw-red-dim: #CC3700;
+            --success: #00E676;
+            --success-soft: rgba(0, 230, 118, 0.12);
+            --warning: #FFB300;
+            --info: #448AFF;
+            --info-soft: rgba(68, 138, 255, 0.12);
+            --text-primary: #E8ECF4;
+            --text-secondary: #8A95A8;
+            --text-tertiary: #5A6478;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(255, 69, 0, 0.35);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --font-ui: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Titlebar */
+        .titlebar {
+            height: 38px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .titlebar-logo {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titlebar-logo span {
+            color: var(--claw-red);
+            font-size: 16px;
+        }
+
+        .titlebar-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .titlebar-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-close {
+            background: #FF5F57;
+        }
+
+        .btn-min {
+            background: #FEBC2E;
+        }
+
+        .btn-max {
+            background: #28C840;
+        }
+
+        /* Layout */
+        .wizard-layout {
+            display: flex;
+            height: calc(100vh - 38px);
+        }
+
+        /* Dimmed Sidebar */
+        .sidebar {
+            width: 64px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            gap: 4px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .nav-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            color: var(--text-tertiary);
+            font-size: 20px;
+        }
+
+        /* Wizard Content */
+        .wizard-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background decoration */
+        .wizard-content::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.06), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Progress Stepper */
+        .stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 40px 24px;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            min-width: 80px;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            border: 2px solid var(--border-light);
+            background: var(--bg-secondary);
+            color: var(--text-tertiary);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: #060D1A;
+        }
+
+        .step.active .step-circle {
+            background: var(--claw-red);
+            border-color: var(--claw-red);
+            color: #fff;
+            box-shadow: 0 0 20px var(--claw-red-glow);
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .step.completed .step-label {
+            color: var(--success);
+        }
+
+        .step.active .step-label {
+            color: var(--claw-red);
+            font-weight: 600;
+        }
+
+        .step-connector {
+            width: 40px;
+            height: 2px;
+            background: var(--border-light);
+            margin-bottom: 22px;
+        }
+
+        .step-connector.done {
+            background: var(--success);
+        }
+
+        .step-connector.current {
+            background: linear-gradient(90deg, var(--success), var(--claw-red));
+        }
+
+        /* Main wizard area */
+        .wizard-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 60px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wizard-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .wizard-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Model Cards Grid */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 820px;
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .model-card {
+            background: var(--bg-card);
+            border: 2px solid var(--bg-glass-border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .model-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .model-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .model-card.selected {
+            border-color: var(--claw-red);
+            box-shadow: 0 0 0 1px var(--claw-red), 0 0 40px var(--claw-red-glow);
+        }
+
+        .model-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: var(--claw-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .model-provider-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .model-card:nth-child(1) .model-provider-logo {
+            background: linear-gradient(135deg, #D97757, #CC6644);
+        }
+
+        .model-card:nth-child(2) .model-provider-logo {
+            background: linear-gradient(135deg, #10A37F, #0D8A6A);
+        }
+
+        .model-card:nth-child(3) .model-provider-logo {
+            background: linear-gradient(135deg, #4285F4, #2B6FD4);
+        }
+
+        .model-card:nth-child(4) .model-provider-logo {
+            background: linear-gradient(135deg, #0066FF, #0052CC);
+        }
+
+        .model-card:nth-child(5) .model-provider-logo {
+            background: linear-gradient(135deg, #6B5CE7, #5644D4);
+        }
+
+        .model-card:nth-child(6) .model-provider-logo {
+            background: linear-gradient(135deg, #5A6478, #444E5E);
+        }
+
+        .model-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .model-provider-name {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 14px;
+        }
+
+        .model-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .model-tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: var(--bg-glass);
+            border: 1px solid var(--bg-glass-border);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .model-tag.highlight {
+            background: var(--claw-red-soft);
+            border-color: var(--border-active);
+            color: var(--claw-red);
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--claw-red), #FF6B35);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Navigation Buttons */
+        .wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 60px 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--claw-red);
+            border-color: var(--claw-red);
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 32px;
+        }
+
+        .btn-primary:hover {
+            background: var(--claw-red-dim);
+            box-shadow: 0 0 25px var(--claw-red-glow);
+            transform: translateY(-1px);
+        }
+
+        .step-indicator {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .model-card:nth-child(1) {
+            animation: fadeInUp 0.4s ease 0.05s both;
+        }
+
+        .model-card:nth-child(2) {
+            animation: fadeInUp 0.4s ease 0.1s both;
+        }
+
+        .model-card:nth-child(3) {
+            animation: fadeInUp 0.4s ease 0.15s both;
+        }
+
+        .model-card:nth-child(4) {
+            animation: fadeInUp 0.4s ease 0.2s both;
+        }
+
+        .model-card:nth-child(5) {
+            animation: fadeInUp 0.4s ease 0.25s both;
+        }
+
+        .model-card:nth-child(6) {
+            animation: fadeInUp 0.4s ease 0.3s both;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Titlebar -->
+    <div class="titlebar">
+        <div class="titlebar-logo"><span>🦞</span> OpenClaw Desktop</div>
+        <div class="titlebar-controls">
+            <button class="titlebar-btn btn-close"></button>
+            <button class="titlebar-btn btn-min"></button>
+            <button class="titlebar-btn btn-max"></button>
+        </div>
+    </div>
+
+    <div class="wizard-layout">
+        <!-- Dimmed Sidebar -->
+        <nav class="sidebar">
+            <div class="nav-item">📊</div>
+            <div class="nav-item">📲</div>
+            <div class="nav-item">🤖</div>
+            <div class="nav-item">🧩</div>
+            <div class="nav-item">💬</div>
+            <div class="nav-item" style="margin-top: auto;">⚙️</div>
+        </nav>
+
+        <!-- Wizard Content -->
+        <div class="wizard-content">
+            <!-- Progress Stepper -->
+            <div class="stepper">
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">欢迎</div>
+                </div>
+                <div class="step-connector done"></div>
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">环境检测</div>
+                </div>
+                <div class="step-connector done"></div>
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">安装</div>
+                </div>
+                <div class="step-connector current"></div>
+                <div class="step active">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">选择模型</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">API 密钥</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">渠道选择</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-circle">7</div>
+                    <div class="step-label">配置</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-circle">8</div>
+                    <div class="step-label">完成</div>
+                </div>
+            </div>
+
+            <!-- Main Area -->
+            <div class="wizard-main">
+                <h1 class="wizard-title">选择您的主 AI 模型</h1>
+                <p class="wizard-subtitle">选择驱动您 AI 助手的核心模型，后续可随时更改或添加后备模型</p>
+
+                <div class="model-grid">
+                    <!-- Claude Opus - Selected -->
+                    <div class="model-card selected" onclick="selectModel(this)">
+                        <div class="recommended-badge">⭐ 推荐</div>
+                        <div class="model-provider-logo">🅰️</div>
+                        <div class="model-name">Claude Opus 4.6</div>
+                        <div class="model-provider-name">Anthropic</div>
+                        <div class="model-tags">
+                            <span class="model-tag highlight">长上下文</span>
+                            <span class="model-tag">视觉</span>
+                            <span class="model-tag">推理</span>
+                            <span class="model-tag">编码</span>
+                        </div>
+                    </div>
+
+                    <!-- GPT-5.2 -->
+                    <div class="model-card" onclick="selectModel(this)">
+                        <div class="model-provider-logo">🟢</div>
+                        <div class="model-name">GPT-5.2</div>
+                        <div class="model-provider-name">OpenAI</div>
+                        <div class="model-tags">
+                            <span class="model-tag">Codex</span>
+                            <span class="model-tag">视觉</span>
+                            <span class="model-tag">推理</span>
+                            <span class="model-tag">快速</span>
+                        </div>
+                    </div>
+
+                    <!-- Gemini -->
+                    <div class="model-card" onclick="selectModel(this)">
+                        <div class="model-provider-logo">🔵</div>
+                        <div class="model-name">Gemini 2.5 Pro</div>
+                        <div class="model-provider-name">Google</div>
+                        <div class="model-tags">
+                            <span class="model-tag">多模态</span>
+                            <span class="model-tag">视觉</span>
+                            <span class="model-tag">长上下文</span>
+                        </div>
+                    </div>
+
+                    <!-- DeepSeek -->
+                    <div class="model-card" onclick="selectModel(this)">
+                        <div class="model-provider-logo">🔷</div>
+                        <div class="model-name">DeepSeek V4</div>
+                        <div class="model-provider-name">DeepSeek</div>
+                        <div class="model-tags">
+                            <span class="model-tag">编码</span>
+                            <span class="model-tag">推理</span>
+                            <span class="model-tag highlight">性价比高</span>
+                        </div>
+                    </div>
+
+                    <!-- OpenRouter -->
+                    <div class="model-card" onclick="selectModel(this)">
+                        <div class="model-provider-logo">🟣</div>
+                        <div class="model-name">OpenRouter</div>
+                        <div class="model-provider-name">聚合平台</div>
+                        <div class="model-tags">
+                            <span class="model-tag">多模型</span>
+                            <span class="model-tag">灵活切换</span>
+                            <span class="model-tag">统一计费</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom -->
+                    <div class="model-card" onclick="selectModel(this)">
+                        <div class="model-provider-logo">⚙️</div>
+                        <div class="model-name">自定义端点</div>
+                        <div class="model-provider-name">自托管 / 第三方</div>
+                        <div class="model-tags">
+                            <span class="model-tag">私有部署</span>
+                            <span class="model-tag">自定义 API</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="wizard-nav">
+                <button class="btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    上一步
+                </button>
+                <span class="step-indicator">步骤 4 / 8</span>
+                <button class="btn btn-primary">
+                    下一步
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectModel(card) {
+            document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+    </script>
+</body>
+
+</html>

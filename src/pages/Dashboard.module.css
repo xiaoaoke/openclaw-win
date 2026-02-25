@@ -1,0 +1,541 @@
+.dashboard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pageHeader {
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.current {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.btnPrimary {
+    background: var(--claw-red);
+    border-color: var(--claw-red);
+    color: #fff;
+}
+
+.btnPrimary:hover {
+    background: var(--claw-red-dim);
+    box-shadow: var(--shadow-glow);
+}
+
+.btnDanger {
+    background: var(--error-soft);
+    border-color: rgba(255, 82, 82, 0.3);
+    color: var(--error);
+}
+
+.btnDanger:hover {
+    background: rgba(255, 82, 82, 0.2);
+    box-shadow: 0 0 12px rgba(255, 82, 82, 0.15);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.scrollArea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px;
+}
+
+/* Gateway status banner */
+.gatewayBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--bg-glass-border);
+    animation: fadeInUp 0.3s ease both;
+}
+
+.bannerRunning {
+    border-color: rgba(0, 230, 118, 0.15);
+}
+
+.bannerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bannerDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.dotActive {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.bannerTitle {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bannerMeta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+}
+
+.btnSmall {
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg-glass);
+    color: var(--text-tertiary);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btnSmall:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.btnSmall:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Stat cards */
+.statRow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.statCard {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-glass-border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    backdrop-filter: blur(20px);
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease both;
+}
+
+.statCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.statCard:nth-child(1)::before {
+    background: linear-gradient(90deg, var(--claw-red), transparent);
+}
+
+.statCard:nth-child(2)::before {
+    background: linear-gradient(90deg, var(--info), transparent);
+}
+
+.statCard:nth-child(3)::before {
+    background: linear-gradient(90deg, var(--warning), transparent);
+}
+
+.statCard:nth-child(4)::before {
+    background: linear-gradient(90deg, var(--success), transparent);
+}
+
+.statCard:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+.statHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.statIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    background: var(--bg-glass);
+}
+
+.statLabel {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statValue {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.statSub {
+    font-size: 16px;
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+.statDesc {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+}
+
+.descUp {
+    color: var(--success);
+}
+
+/* Columns */
+.columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.4s ease 0.2s both;
+}
+
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.panelHeader {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.panelTitle {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--claw-red-soft);
+    color: var(--claw-red);
+    font-weight: 600;
+}
+
+.panelBody {
+    padding: 6px 10px;
+}
+
+/* Sessions */
+.sessionItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    transition: background 0.15s;
+    cursor: pointer;
+}
+
+.sessionItem:hover {
+    background: var(--bg-glass);
+}
+
+.sessionIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-right: 12px;
+}
+
+.whatsapp {
+    background: rgba(37, 211, 102, 0.12);
+}
+
+.telegram {
+    background: rgba(38, 165, 227, 0.12);
+}
+
+.discord {
+    background: rgba(88, 101, 242, 0.12);
+}
+
+.slack {
+    background: rgba(224, 30, 90, 0.12);
+}
+
+.webchat {
+    background: var(--claw-red-soft);
+}
+
+.sessionInfo {
+    flex: 1;
+}
+
+.sessionName {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.sessionMeta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+}
+
+.sessionTime {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-right: 10px;
+}
+
+.sessionDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.active {
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+}
+
+.idle {
+    background: var(--warning);
+}
+
+/* Chart */
+.chartArea {
+    padding: 18px;
+}
+
+.chartHeader {
+    margin-bottom: 12px;
+}
+
+.chartValue {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.chartUnit {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+.chartTrend {
+    font-size: 12px;
+    color: var(--success);
+    margin-top: 2px;
+}
+
+.chartTabs {
+    display: flex;
+    gap: 4px;
+}
+
+.chartTab {
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.chartTab:hover {
+    color: var(--text-secondary);
+}
+
+.chartTabActive {
+    background: var(--claw-red-soft);
+    color: var(--claw-red);
+}
+
+.chartCanvas {
+    height: 150px;
+}
+
+.chartSvg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Logs */
+.logsPanel {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease 0.3s both;
+}
+
+.logLine {
+    display: flex;
+    align-items: center;
+    padding: 7px 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.1s;
+}
+
+.logLine:hover {
+    background: var(--bg-glass);
+}
+
+.logLine:last-child {
+    border-bottom: none;
+}
+
+.logTime {
+    color: var(--text-tertiary);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.logLevel {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.info {
+    background: var(--info-soft);
+    color: var(--info);
+}
+
+.warn {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+
+.error {
+    background: var(--error-soft);
+    color: var(--error);
+}
+
+.debug {
+    background: var(--bg-glass);
+    color: var(--text-tertiary);
+}
+
+.logMsg {
+    color: var(--text-secondary);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logSource {
+    color: var(--text-tertiary);
+    font-size: 10px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

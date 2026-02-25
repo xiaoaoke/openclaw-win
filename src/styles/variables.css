@@ -1,0 +1,60 @@
+/* ============================================================
+   OpenClaw Desktop — Design System Variables
+   ============================================================ */
+
+:root {
+  /* ---- Core Palette ---- */
+  --bg-primary: #060D1A;
+  --bg-secondary: #0B1526;
+  --bg-tertiary: #101D32;
+  --bg-card: rgba(16, 29, 50, 0.65);
+  --bg-card-hover: rgba(22, 38, 65, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-glass-border: rgba(255, 255, 255, 0.06);
+
+  /* ---- Brand ---- */
+  --claw-red: #FF4500;
+  --claw-red-glow: rgba(255, 69, 0, 0.25);
+  --claw-red-soft: rgba(255, 69, 0, 0.12);
+  --claw-red-dim: #CC3700;
+
+  /* ---- Semantic ---- */
+  --success: #00E676;
+  --success-soft: rgba(0, 230, 118, 0.12);
+  --warning: #FFB300;
+  --warning-soft: rgba(255, 179, 0, 0.12);
+  --error: #FF5252;
+  --error-soft: rgba(255, 82, 82, 0.12);
+  --info: #448AFF;
+  --info-soft: rgba(68, 138, 255, 0.12);
+
+  /* ---- Text ---- */
+  --text-primary: #E8ECF4;
+  --text-secondary: #8A95A8;
+  --text-tertiary: #5A6478;
+  --text-accent: #FF6B35;
+
+  /* ---- Borders ---- */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 69, 0, 0.35);
+
+  /* ---- Shadows ---- */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px var(--claw-red-glow);
+
+  /* ---- Radius ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* ---- Typography ---- */
+  --font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ---- Sizing ---- */
+  --sidebar-width: 64px;
+  --titlebar-height: 38px;
+  --statusbar-height: 32px;
+}

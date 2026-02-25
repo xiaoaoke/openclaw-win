@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Desktop — Channel Management</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #060D1A;
+            --bg-secondary: #0B1526;
+            --bg-tertiary: #101D32;
+            --bg-card: rgba(16, 29, 50, 0.65);
+            --bg-card-hover: rgba(22, 38, 65, 0.85);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --bg-glass-border: rgba(255, 255, 255, 0.06);
+            --claw-red: #FF4500;
+            --claw-red-glow: rgba(255, 69, 0, 0.25);
+            --claw-red-soft: rgba(255, 69, 0, 0.12);
+            --claw-red-dim: #CC3700;
+            --success: #00E676;
+            --success-soft: rgba(0, 230, 118, 0.12);
+            --warning: #FFB300;
+            --warning-soft: rgba(255, 179, 0, 0.12);
+            --error: #FF5252;
+            --error-soft: rgba(255, 82, 82, 0.12);
+            --info: #448AFF;
+            --info-soft: rgba(68, 138, 255, 0.12);
+            --text-primary: #E8ECF4;
+            --text-secondary: #8A95A8;
+            --text-tertiary: #5A6478;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(255, 69, 0, 0.35);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --font-ui: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Titlebar */
+        .titlebar {
+            height: 38px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .titlebar-logo {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titlebar-logo span {
+            color: var(--claw-red);
+            font-size: 16px;
+        }
+
+        .titlebar-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .titlebar-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-close {
+            background: #FF5F57;
+        }
+
+        .btn-min {
+            background: #FEBC2E;
+        }
+
+        .btn-max {
+            background: #28C840;
+        }
+
+        /* Layout */
+        .app-layout {
+            display: flex;
+            height: calc(100vh - 38px - 32px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 64px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            gap: 4px;
+        }
+
+        .nav-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            font-size: 20px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+        }
+
+        .nav-item.active {
+            background: var(--claw-red-soft);
+            color: var(--claw-red);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            width: 3px;
+            height: 20px;
+            background: var(--claw-red);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .sidebar-spacer {
+            flex: 1;
+        }
+
+        .sidebar-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px var(--success);
+            }
+
+            50% {
+                box-shadow: 0 0 16px var(--success);
+            }
+        }
+
+        /* Main */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .page-header {
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .breadcrumb .current {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 7px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--claw-red);
+            border-color: var(--claw-red);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--claw-red-dim);
+            box-shadow: 0 0 25px var(--claw-red-glow);
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 11px;
+        }
+
+        .btn-success {
+            background: var(--success-soft);
+            border-color: rgba(0, 230, 118, 0.2);
+            color: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--error-soft);
+            border-color: rgba(255, 82, 82, 0.2);
+            color: var(--error);
+        }
+
+        /* Two Column Layout */
+        .channel-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Channel List Panel */
+        .channel-list-panel {
+            width: 320px;
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .channel-list-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .channel-list-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .channel-search {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .channel-search:focus {
+            border-color: var(--border-active);
+        }
+
+        .channel-search::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .channel-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .channel-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .channel-scroll::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 2px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: 2px;
+        }
+
+        .channel-item:hover {
+            background: var(--bg-glass);
+        }
+
+        .channel-item.active {
+            background: var(--claw-red-soft);
+            border: 1px solid var(--border-active);
+        }
+
+        .channel-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .channel-icon.whatsapp {
+            background: rgba(37, 211, 102, 0.12);
+        }
+
+        .channel-icon.telegram {
+            background: rgba(38, 165, 227, 0.12);
+        }
+
+        .channel-icon.discord {
+            background: rgba(88, 101, 242, 0.12);
+        }
+
+        .channel-icon.slack {
+            background: rgba(224, 30, 90, 0.12);
+        }
+
+        .channel-icon.signal {
+            background: rgba(59, 134, 247, 0.12);
+        }
+
+        .channel-icon.teams {
+            background: rgba(80, 80, 200, 0.12);
+        }
+
+        .channel-icon.webchat {
+            background: var(--claw-red-soft);
+        }
+
+        .channel-icon.imessage {
+            background: rgba(52, 199, 89, 0.12);
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .channel-meta {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .channel-status-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .badge-connected {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .badge-configuring {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .badge-offline {
+            background: var(--bg-glass);
+            color: var(--text-tertiary);
+        }
+
+        .add-channel-btn {
+            margin: 8px;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-light);
+            background: transparent;
+            color: var(--text-tertiary);
+            font-family: var(--font-ui);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .add-channel-btn:hover {
+            border-color: var(--claw-red);
+            color: var(--claw-red);
+            background: var(--claw-red-soft);
+        }
+
+        /* Channel Detail Panel */
+        .channel-detail {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .detail-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: rgba(37, 211, 102, 0.12);
+        }
+
+        .detail-title-area {
+            flex: 1;
+        }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .detail-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .detail-status {
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-status.connected {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .detail-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            left: 2px;
+            bottom: 2px;
+            background: var(--text-tertiary);
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--claw-red);
+            border-color: var(--claw-red);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+            background: #fff;
+        }
+
+        /* Tabs */
+        .detail-tabs {
+            display: flex;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .detail-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .detail-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .detail-tab.active {
+            color: var(--claw-red);
+            border-bottom-color: var(--claw-red);
+        }
+
+        /* Detail Content */
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .detail-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .detail-content::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 2px;
+        }
+
+        .config-section {
+            margin-bottom: 28px;
+        }
+
+        .config-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .config-field {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .config-field-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .config-field-desc {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .config-field-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Select / Dropdown */
+        .config-select {
+            padding: 6px 28px 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A95A8' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        .config-select:focus {
+            border-color: var(--claw-red);
+        }
+
+        /* Tags Input */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: var(--radius-md);
+            min-height: 44px;
+            align-items: center;
+        }
+
+        .tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--info-soft);
+            border: 1px solid rgba(68, 138, 255, 0.15);
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--info);
+            font-weight: 500;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+            font-size: 14px;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .tag-add-input {
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            outline: none;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .tag-add-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Pairing Requests */
+        .pairing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .pairing-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .pairing-info {
+            flex: 1;
+        }
+
+        .pairing-contact {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .pairing-code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--warning);
+            margin-top: 2px;
+        }
+
+        .pairing-time {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .pairing-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* Status Bar */
+        .statusbar {
+            height: 32px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 20px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .statusbar-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .statusbar-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .statusbar-dot.green {
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+        }
+
+        .statusbar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 16px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .channel-detail {
+            animation: fadeInUp 0.3s ease both;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Titlebar -->
+    <div class="titlebar">
+        <div class="titlebar-logo"><span>🦞</span> OpenClaw Desktop</div>
+        <div class="titlebar-controls">
+            <button class="titlebar-btn btn-close"></button>
+            <button class="titlebar-btn btn-min"></button>
+            <button class="titlebar-btn btn-max"></button>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+            </div>
+            <div class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                    <path d="M16 16H8a4 4 0 0 0-4 4v1h16v-1a4 4 0 0 0-4-4z" />
+                </svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+            </div>
+            <div class="sidebar-spacer"></div>
+            <div class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+            </div>
+            <div class="sidebar-status">
+                <div class="status-dot"></div>
+                <span>在线</span>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div class="breadcrumb">渠道管理 / <span class="current">WhatsApp</span></div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        添加渠道
+                    </button>
+                </div>
+            </div>
+
+            <div class="channel-layout">
+                <!-- Channel List -->
+                <div class="channel-list-panel">
+                    <div class="channel-list-header">
+                        <div class="channel-list-title">已配置渠道</div>
+                        <input class="channel-search" placeholder="🔍 搜索渠道..." />
+                    </div>
+                    <div class="channel-scroll">
+                        <div class="channel-item active">
+                            <div class="channel-icon whatsapp">💬</div>
+                            <div class="channel-info">
+                                <div class="channel-name">WhatsApp</div>
+                                <div class="channel-meta">3 个活跃会话</div>
+                            </div>
+                            <span class="channel-status-badge badge-connected">已连接</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon telegram">✈️</div>
+                            <div class="channel-info">
+                                <div class="channel-name">Telegram</div>
+                                <div class="channel-meta">2 个活跃会话</div>
+                            </div>
+                            <span class="channel-status-badge badge-connected">已连接</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon discord">🎮</div>
+                            <div class="channel-info">
+                                <div class="channel-name">Discord</div>
+                                <div class="channel-meta">5 个活跃会话</div>
+                            </div>
+                            <span class="channel-status-badge badge-connected">已连接</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon slack">📋</div>
+                            <div class="channel-info">
+                                <div class="channel-name">Slack</div>
+                                <div class="channel-meta">正在配置中...</div>
+                            </div>
+                            <span class="channel-status-badge badge-configuring">配置中</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon signal">🛡️</div>
+                            <div class="channel-info">
+                                <div class="channel-name">Signal</div>
+                                <div class="channel-meta">未连接</div>
+                            </div>
+                            <span class="channel-status-badge badge-offline">离线</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon teams">🟦</div>
+                            <div class="channel-info">
+                                <div class="channel-name">MS Teams</div>
+                                <div class="channel-meta">未连接</div>
+                            </div>
+                            <span class="channel-status-badge badge-offline">离线</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon webchat">🦞</div>
+                            <div class="channel-info">
+                                <div class="channel-name">WebChat</div>
+                                <div class="channel-meta">内建 · 始终可用</div>
+                            </div>
+                            <span class="channel-status-badge badge-connected">已连接</span>
+                        </div>
+                        <div class="channel-item">
+                            <div class="channel-icon imessage">🍎</div>
+                            <div class="channel-info">
+                                <div class="channel-name">BlueBubbles</div>
+                                <div class="channel-meta">iMessage 集成</div>
+                            </div>
+                            <span class="channel-status-badge badge-offline">离线</span>
+                        </div>
+                        <button class="add-channel-btn">＋ 添加新渠道</button>
+                    </div>
+                </div>
+
+                <!-- Channel Detail -->
+                <div class="channel-detail">
+                    <div class="detail-header">
+                        <div class="detail-icon">💬</div>
+                        <div class="detail-title-area">
+                            <div class="detail-title">WhatsApp</div>
+                            <div class="detail-subtitle">Baileys · 设备已链接 · 已运行 3 天 12 小时</div>
+                        </div>
+                        <div class="detail-status connected">
+                            <div class="dot"></div> 已连接
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="detail-tabs">
+                        <div class="detail-tab">概览</div>
+                        <div class="detail-tab active">配置</div>
+                        <div class="detail-tab">白名单</div>
+                        <div class="detail-tab">群组</div>
+                        <div class="detail-tab">日志</div>
+                    </div>
+
+                    <div class="detail-content">
+                        <!-- DM Policy -->
+                        <div class="config-section">
+                            <div class="config-section-title">消息策略</div>
+                            <div class="config-field">
+                                <div class="config-field-left">
+                                    <div class="config-field-label">DM 策略</div>
+                                    <div class="config-field-desc">控制未知发送者如何与助手交互</div>
+                                </div>
+                                <select class="config-select">
+                                    <option value="pairing" selected>🔒 配对 (Pairing)</option>
+                                    <option value="allowlist">📋 白名单 (Allowlist)</option>
+                                    <option value="open">🌐 开放 (Open)</option>
+                                    <option value="disabled">🚫 禁用 (Disabled)</option>
+                                </select>
+                            </div>
+                            <div class="config-field">
+                                <div class="config-field-left">
+                                    <div class="config-field-label">媒体最大尺寸</div>
+                                    <div class="config-field-desc">接收媒体文件的大小限制</div>
+                                </div>
+                                <select class="config-select">
+                                    <option>8 MB</option>
+                                    <option selected>16 MB</option>
+                                    <option>32 MB</option>
+                                    <option>64 MB</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Allow From -->
+                        <div class="config-section">
+                            <div class="config-section-title">允许来源 (allowFrom)</div>
+                            <div class="tags-container">
+                                <div class="tag">+86 138****7890 <span class="tag-remove">×</span></div>
+                                <div class="tag">+86 139****5678 <span class="tag-remove">×</span></div>
+                                <div class="tag">+1 555****0123 <span class="tag-remove">×</span></div>
+                                <input class="tag-add-input" placeholder="输入手机号码并回车添加..." />
+                            </div>
+                        </div>
+
+                        <!-- Groups -->
+                        <div class="config-section">
+                            <div class="config-section-title">群组设置</div>
+                            <div class="config-field">
+                                <div class="config-field-left">
+                                    <div class="config-field-label">允许所有群组</div>
+                                    <div class="config-field-desc">设置为 "*" 以允许所有群组</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="config-field">
+                                <div class="config-field-left">
+                                    <div class="config-field-label">需要 @提及</div>
+                                    <div class="config-field-desc">在群组中需要 @提及才会响应</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Pending Pairing -->
+                        <div class="config-section">
+                            <div class="config-section-title">待审批的配对请求</div>
+                            <div class="pairing-card">
+                                <div class="pairing-avatar">👤</div>
+                                <div class="pairing-info">
+                                    <div class="pairing-contact">+86 136****9012</div>
+                                    <div class="pairing-code">配对码: CLAW-8X3P</div>
+                                    <div class="pairing-time">5 分钟前</div>
+                                </div>
+                                <div class="pairing-actions">
+                                    <button class="btn btn-sm btn-success">✓ 批准</button>
+                                    <button class="btn btn-sm btn-danger">✕ 拒绝</button>
+                                </div>
+                            </div>
+                            <div class="pairing-card">
+                                <div class="pairing-avatar">👤</div>
+                                <div class="pairing-info">
+                                    <div class="pairing-contact">+1 234****5678</div>
+                                    <div class="pairing-code">配对码: CLAW-Q7M2</div>
+                                    <div class="pairing-time">23 分钟前</div>
+                                </div>
+                                <div class="pairing-actions">
+                                    <button class="btn btn-sm btn-success">✓ 批准</button>
+                                    <button class="btn btn-sm btn-danger">✕ 拒绝</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="statusbar">
+        <div class="statusbar-item">
+            <div class="statusbar-dot green"></div> Gateway: Running
+        </div>
+        <div class="statusbar-item">Port: 18789</div>
+        <div class="statusbar-item">渠道: 5/8 已连接</div>
+        <div class="statusbar-right">
+            <div class="statusbar-item">v2026.2.24</div>
+        </div>
+    </div>
+
+</body>
+
+</html>

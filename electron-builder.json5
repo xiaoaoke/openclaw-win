@@ -1,0 +1,36 @@
+{
+    "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+    "appId": "com.openclaw.desktop",
+    "productName": "OpenClaw Desktop",
+    "copyright": "Copyright © 2026 OpenClaw",
+    "asar": true,
+    "directories": {
+        "output": "release",
+        "buildResources": "build"
+    },
+    "files": [
+        {
+            "from": "dist",
+            "to": "dist",
+            "filter": ["**/*"]
+        },
+        {
+            "from": "dist-electron",
+            "to": "dist-electron",
+            "filter": ["**/*"]
+        },
+        "package.json"
+    ],
+    "extraMetadata": {
+        "main": "dist-electron/main.js"
+    },
+    "win": {
+        "target": [
+            {
+                "target": "dir",
+                "arch": ["x64"]
+            }
+        ]
+    },
+    "publish": null
+}
